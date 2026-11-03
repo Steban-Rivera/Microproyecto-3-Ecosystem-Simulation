@@ -44,3 +44,6 @@ Thumbs.db
 *.tmp
 __pycache__/
 *.pyc
+
+# Local documentation builder script
+build_pdf_report.py
