@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecosystem Simulation - Microproyecto 3 (Zorros, Conejos y Rocas)</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js from CDN for interactive population dynamics graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="logo-title">
+            <span class="icon">🦊🐰🪨</span>
+            <h1>Simulador de Ecosistema Predator-Prey</h1>
+            <span class="badge">Visualizador Web (Motor JavaScript en Cliente)</span>
+        </div>
+        <div class="header-status">
+            <span id="genDisplay" class="status-pill">Generación: <strong>0 / 6</strong></span>
+            <span id="rabbitDisplay" class="status-pill pill-rabbit">Conejos: <strong>3</strong></span>
+            <span id="foxDisplay" class="status-pill pill-fox">Zorros: <strong>4</strong></span>
+            <span id="rockDisplay" class="status-pill pill-rock">Rocas: <strong>2</strong></span>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Left Panel: Grid Visualization & Playback Controls -->
+        <section class="grid-section card">
+            <div class="card-header">
+                <h2>Matriz del Ecosistema (<span id="dimsDisplay">5 x 5</span>)</h2>
+                <div class="legend">
+                    <span class="legend-item"><span class="legend-dot dot-rock"></span> Roca (🪨)</span>
+                    <span class="legend-item"><span class="legend-dot dot-rabbit"></span> Conejo (🐰)</span>
+                    <span class="legend-item"><span class="legend-dot dot-fox"></span> Zorro (🦊)</span>
+                    <span class="legend-item"><span class="legend-dot dot-empty"></span> Vacío</span>
+                </div>
+            </div>
+
+            <div class="canvas-wrapper">
+                <canvas id="ecosystemCanvas"></canvas>
+            </div>
+
+            <!-- Time Controls -->
+            <div class="controls-toolbar">
+                <button id="btnPlay" class="btn btn-primary">▶ Reproducir</button>
+                <button id="btnStep" class="btn btn-secondary">⏭ Paso</button>
+                <button id="btnReset" class="btn btn-warning">↺ Reiniciar</button>
+
+                <div class="speed-control">
+                    <label for="speedRange">Velocidad:</label>
+                    <input type="range" id="speedRange" min="50" max="1000" step="50" value="300">
+                    <span id="speedVal">300 ms</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel: Parameters, Graphs & Input/Output -->
+        <aside class="sidebar">
+            <!-- Population Dynamics Chart -->
+            <div class="card chart-card">
+                <div class="card-header">
+                    <h2>Dinámica Poblacional en el Tiempo</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="populationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Configuration Parameters -->
+            <div class="card params-card">
+                <div class="card-header">
+                    <h2>Parámetros del Ecosistema</h2>
+                </div>
+                <div class="params-grid">
+                    <div class="param-group">
+                        <label for="pProcRabbits">GEN_PROC_RABBITS:</label>
+                        <input type="number" id="pProcRabbits" min="1" value="2">
+                    </div>
+                    <div class="param-group">
+                        <label for="pProcFoxes">GEN_PROC_FOXES:</label>
+                        <input type="number" id="pProcFoxes" min="1" value="4">
+                    </div>
+                    <div class="param-group">
+                        <label for="pFoodFoxes">GEN_FOOD_FOXES:</label>
+                        <input type="number" id="pFoodFoxes" min="1" value="3">
+                    </div>
+                    <div class="param-group">
+                        <label for="pNGen">N_GEN (Generaciones):</label>
+                        <input type="number" id="pNGen" min="0" value="6">
+                    </div>
+                    <div class="param-group">
+                        <label for="pRows">Filas (R):</label>
+                        <input type="number" id="pRows" min="1" max="100" value="5">
+                    </div>
+                    <div class="param-group">
+                        <label for="pCols">Columnas (C):</label>
+                        <input type="number" id="pCols" min="1" max="100" value="5">
+                    </div>
+                </div>
+
+                <div class="preset-buttons">
+                    <button id="btnPresetProf" class="btn btn-sm">Ejemplo del Profesor</button>
+                    <button id="btnPresetBalance" class="btn btn-sm">Equilibrio Cíclico (20x20)</button>
+                    <button id="btnPresetOverpop" class="btn btn-sm">Explosión de Conejos (15x15)</button>
+                </div>
+            </div>
+
+            <!-- Custom Input / Output File -->
+            <div class="card io-card">
+                <div class="card-header">
+                    <h2>Cargar / Exportar Datos</h2>
+                </div>
+                <div class="io-content">
+                    <textarea id="ioTextarea" rows="4" placeholder="Pega aquí el archivo de entrada o haz clic en Cargar archivo..."></textarea>
+                    <div class="io-actions">
+                        <label class="btn btn-sm btn-file">
+                            Cargar Archivo TXT / JSON
+                            <input type="file" id="fileInput" accept=".txt,.json" style="display: none;">
+                        </label>
+                        <button id="btnApplyText" class="btn btn-sm">Aplicar Texto</button>
+                        <button id="btnExportOutput" class="btn btn-sm btn-secondary">Exportar Estado</button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <footer class="footer">
+        <p>Microproyecto 3: Ecosystem Simulation &bull; Motor nativo en C++17 con OpenMP (CLI) &bull; Visualizador interactivo en JavaScript (Web Client-Side)</p>
+        <p style="font-size: 0.72rem; color: #64748b; margin-top: 4px;">Nota técnica: El paralelismo multihilo OpenMP opera exclusivamente en los binarios compilados de C++. El navegador ejecuta una réplica algorítmica determinista en JS.</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

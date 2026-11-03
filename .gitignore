@@ -1,0 +1,46 @@
+# Build and binary directories
+build/
+bin/
+out/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+Testing/
+*.ninja_deps
+*.ninja_log
+build.ninja
+
+# Compiled binaries and libraries
+*.exe
+*.obj
+*.o
+*.a
+*.lib
+*.dll
+*.so
+*.dylib
+*.pdb
+*.ilk
+*.exp
+
+# Visual Studio & IDE temporary files
+.vs/
+*.vcxproj.user
+*.VC.db
+*.VC.opendb
+*.suo
+*.user
+.vscode/
+.idea/
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# Temporary test logs and python caches
+*.log
+*.tmp
+__pycache__/
+*.pyc
