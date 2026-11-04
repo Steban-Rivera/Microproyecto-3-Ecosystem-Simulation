@@ -47,3 +47,4 @@ __pycache__/
 
 # Local documentation builder script
 build_pdf_report.py
+build_final_pdf.py
